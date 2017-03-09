@@ -72,6 +72,7 @@ $(document).ready(function(){
             goalMin = 99; goalSec = 0;
             exerciseType = 1; timeDirect = 1;
         }
+        $(".schedule li:eq(" + exercise + ") .del").remove();
         $(".timer .name").html(xName);
     }
 
