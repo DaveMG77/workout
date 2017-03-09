@@ -32,6 +32,30 @@ $(document).ready(function(){
         return false;
     });
     
+    function checkValues(){
+        var numLines = $(".schedule li").length;
+        var clean = true;
+        for (var i = 0; i < numLines; i++){
+            $(".schedule li:eq(" + i + ") .err").remove();
+            if ($(".schedule li:eq(" + i + ")").hasClass("timed")){
+                var minutes = $(".schedule li:eq(" + i + ") div:eq(1) input").val();
+                var seconds = $(".schedule li:eq(" + i + ") div:eq(2) input").val();
+                if ((!minutes) && (!seconds)){
+                    $(".schedule li:eq(" + i + ")").append("<div class='err'><div>Please add time</div></div>");
+                    clean = false;
+                }
+            } else {
+                var name = $(".schedule li:eq(" + i + ") div:eq(0) input").val();
+                var reps = $(".schedule li:eq(" + i + ") div:eq(2) input").val();
+                if ((!name) && (!reps)){
+                    $(".schedule li:eq(" + i + ")").append("<div class='err'><div>Please add reps or an exercise name</div></div>");
+                    clean = false;
+                }
+            }
+        }
+        return clean;
+    }
+
     function loadExercise(){
         xName = $(".schedule li:eq(" + exercise + ") div:eq(0) input").val();
         if ($(".schedule li:eq(" + exercise + ")").hasClass("timed")){
@@ -42,7 +66,9 @@ $(document).ready(function(){
             exerciseType = 0; timeDirect = 0;
         } else {
             var reps = $(".schedule li:eq(" + exercise + ") div:eq(2) input").val();
-            xName = reps + " - " + xName;
+            if (reps){
+                xName = reps + " - " + xName;
+            }
             goalMin = 99; goalSec = 0;
             exerciseType = 1; timeDirect = 1;
         }
@@ -159,20 +185,22 @@ $(document).ready(function(){
     $(".tools .run, .timer .control").click(function(){
         // On click to start, clear results (if running again), show results
         // and show current exercise time (if running again)
-        if (exercise == 0){
-            $(".sub-title, .results").removeClass("hidden");
-            $(curTime).removeClass("hidden");
-            $(".results").html("");
-        }
-        if ($(".tools .run").hasClass("on")){
-            clearTimeout(t);
-            $(".timer").addClass("full-stop");
-            $(".tools .run").removeClass("on").html("Run");
-        } else {
-            loadExercise();
-            timer();
-            $(".timer").removeClass("full-stop").addClass("full");
-            $(".tools .run").addClass("on").html("Pause");
+        if (checkValues()){
+            if (exercise == 0){
+                $(".sub-title, .results").removeClass("hidden");
+                $(curTime).removeClass("hidden");
+                $(".results").html("");
+            }
+            if ($(".tools .run").hasClass("on")){
+                clearTimeout(t);
+                $(".timer").addClass("full-stop");
+                $(".tools .run").removeClass("on").html("Run");
+            } else {
+                loadExercise();
+                timer();
+                $(".timer").removeClass("full-stop").addClass("full");
+                $(".tools .run").addClass("on").html("Pause");
+            }
         }
         return false;
     });
